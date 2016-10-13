@@ -1,0 +1,61 @@
+= Raw Notes
+
+----
+
+# create project
+oc new-project lamp-demo
+
+# if mysql-persistent is not available (CDK) create mysql-persistent template.
+oc create -f https://raw.githubusercontent.com/openshift/origin/master/examples/db-templates/mysql-persistent-template.json
+
+# Create  mysql database.
+oc new-app --template=mysql-persistent -p DATABASE_SERVICE_NAME=mysql,MYSQL_USER=demo,MYSQL_DATABASE=starships
+
+# Grab the generated password and store it as a environment variable for later use when creating the PHP container
+MYSQL_PASSWORD=$(oc env dc/mysql --list | grep MYSQL_PASSWORD | cut -f2 -d'=')
+
+# Rsync starships.sql into the mysql container
+
+rsync the mysql folder into the pod
+
+# get the pod name
+MYSQL_POD=$(oc get pods --no-headers=true -l deploymentconfig=mysql | awk '{print $1}')
+
+#rsync the db folder to the pod tmp folder
+oc rsync mysql ${MYSQL_POD}:/tmp
+
+# import starships.sql into the mysql database
+# execute the import
+oc exec ${MYSQL_POD} -- bash -c 'mysql -u root < /tmp/mysql/starships.sql'
+
+# check the exit code of the command to make sure there was no issues on import
+if [ $? -gt 0 ] ; then echo error on import; else echo imported successfully ; fi
+
+# Verify tables
+
+oc exec ${MYSQL_POD} -- bash -c 'mysql -u root -e show\ tables starships'
+
+# verify data
+oc exec ${MYSQL_POD} -- bash -c 'mysql -u root -D starships -e select\ *\ FROM\ starships'
+
+Ensure that the tables are being returned.
+
+
+# Create PHP application
+
+Remember to grab DB password from mysql dc.
+
+# private key
+shell> oc new-app --name php -e DB_HOST=mysql,DB_USER=demo,DB_PASS=${MYSQL_PASSWORD},DB_NAME=starships php:latest~git@github.com:ctornatta/openshift-lamp-s2i-demo.git --context-dir=app
+
+# public
+shell> oc new-app --name php -e DB_HOST=mysql,DB_USER=demo,DB_PASS=${MYSQL_PASSWORD},DB_NAME=starships php:latest~https://github.com/ctornatta/openshift-lamp-s2i-demo.git --context-dir=app
+
+# Expose a route to your php application.
+
+oc expose svc php --hostname=php.example.com
+
+# (optional) binary build. From root of folder (the context root of app is still in play)
+oc start-build bc/php --from-file=./
+
+----
