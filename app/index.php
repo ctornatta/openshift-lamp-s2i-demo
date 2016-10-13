@@ -5,20 +5,18 @@ $db_name = getenv('DB_NAME');
 $db_pass = getenv('DB_PASS');
 $db_user = getenv('DB_USER');
 
-//connection to the database
-$dbhandle = mysql_connect($db_host, $db_user, $db_pass)
- or die("Unable to connect to MySQL");
-echo "Connected to MySQL<br>";
+#connection to the database
+$dbhandle = new mysqli($db_host, $db_user, $db_pass, $db_name);
+if ($dbhandle->connect_errno) {
+    echo "Failed to connect to MySQL: (" . $dbhandle->connect_errno . ") " . $dbhandle>connect_error;
+}
+echo $dbhandle->host_info . "\n";
 
-//select a database to work with
-$selected = mysql_select_db($db_name,$dbhandle)
-  or die("Could not select $db_name");
+#Execute Query
+$result = $dbhandle->query("SELECT id, name, class, government FROM starship");
 
-//execute the SQL query and return records
-$result = mysql_query("SELECT id, name, class, government FROM starship");
-
-//fetch tha data from the database
-while ($row = mysql_fetch_array($result)) {
+#Display data
+while ($row = $result->fetch_assoc()) {
    echo "ID:".$row{'id'}." Name:".$row{'class'}."Government: ".$row{'government'}."<br>";
 }
 //close the connection
