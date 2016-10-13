@@ -15,12 +15,11 @@ $selected = mysql_select_db($db_name,$dbhandle)
   or die("Could not select $db_name");
 
 //execute the SQL query and return records
-$result = mysql_query("SELECT id, name, class, government FROM STARSHIP");
+$result = mysql_query("SELECT id, name, class, government FROM starship");
 
 //fetch tha data from the database
 while ($row = mysql_fetch_array($result)) {
-   echo "ID:".$row{'id'}." Name:".$row{'class'}."Government: ". //display the results
-   $row{'government'}."<br>";
+   echo "ID:".$row{'id'}." Name:".$row{'class'}."Government: ".$row{'government'}."<br>";
 }
 //close the connection
 mysql_close($dbhandle);
