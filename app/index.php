@@ -8,7 +8,7 @@ $db_user = getenv('DB_USER');
 #connection to the database
 $dbhandle = new mysqli($db_host, $db_user, $db_pass, $db_name);
 if ($dbhandle->connect_errno) {
-    echo "Failed to connect to MySQL: (" . $dbhandle->connect_errno . ") " . $dbhandle>connect_error;
+    echo "Failed to connect to MySQL: (" . $dbhandle->connect_errno . ") " . $dbhandle->connect_error;
 }
 echo $dbhandle->host_info . "\n";
 
