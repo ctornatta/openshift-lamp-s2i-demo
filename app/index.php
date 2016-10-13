@@ -21,7 +21,7 @@ if ($dbhandle->connect_errno) {
 #echo $dbhandle->host_info . "\n";
 
 #Execute Query
-$result = $dbhandle->query("SELECT id, name, class, government FROM starship");
+$result = $dbhandle->query("SELECT id, name, class, government FROM starships");
 
 echo "<H1>Star Trek Starships</H1>";
 #Display data
