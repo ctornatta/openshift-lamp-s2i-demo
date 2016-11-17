@@ -24,7 +24,7 @@ if ($dbhandle->connect_errno) {
 $result = $dbhandle->query("SELECT id, name, class, government FROM starships");
 
 echo "<H1>Star Trek Starships</H1>";
-echo "<H1>Version 1.4</H1>";
+echo "<H1>Version 1.5</H1>";
 #Display data
 while ($row = $result->fetch_assoc()) {
    echo "<b>Row:</b> ".$row{'id'}."<br><b>Name:</b> ".$row{'name'}."<br><b>Class:</b> ".$row{'class'}."<br><b>Government:</b> ".$row{'government'}."<br><br>";
